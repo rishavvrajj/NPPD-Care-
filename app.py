@@ -10,7 +10,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 app = Flask(__name__)
 
 # Load and read the data
-f = open('C:/Workspace/Portfolio/Project/Data.txt', 'r', errors='ignore')
+f = open('./Data.txt', 'r', errors='ignore')
 raw_doc = f.read()
 
 # Preprocess the document
