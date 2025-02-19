@@ -3,10 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chatbot</title>
+    <title>Chatbot - WhatsApp Style</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #ece5dd;
+        }
+        #chat-container {
+            width: 360px;
+            height: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        #chat-box {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        #user-message, #bot-message {
+            max-width: 70%;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+        #user-message {
+            background-color: #dcf8c6;
+            align-self: flex-end;
+        }
+        #bot-message {
+            background-color: #fff;
+            align-self: flex-start;
+            border: 1px solid #ddd;
+        }
+        #input-container {
+            display: flex;
+            border-top: 1px solid #ddd;
+            padding: 10px;
+        }
+        #user-input {
+            width: 80%;
+            padding: 10px;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+        }
+        button {
+            width: 15%;
+            background-color: #25D366;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            margin-left: 5px;
+        }
+    </style>
     <script>
         async function sendMessage() {
             let message = document.getElementById('user-input').value;
+            if (message.trim() === "") return;  // Prevent sending empty messages
+
+            // Display the user's message
+            let userMessageDiv = document.createElement('div');
+            userMessageDiv.classList.add('message');
+            userMessageDiv.id = 'user-message';
+            userMessageDiv.innerText = message;
+            document.getElementById('chat-box').appendChild(userMessageDiv);
+            document.getElementById('user-input').value = '';  // Clear input
+
+            // Scroll to the bottom of the chat
+            document.getElementById('chat-box').scrollTop = document.getElementById('chat-box').scrollHeight;
+
+            // Fetch the bot response
             let response = await fetch('/chat', {
                 method: 'POST',
                 headers: {
@@ -15,18 +92,28 @@
                 body: JSON.stringify({ message: message }),
             });
             let data = await response.json();
-            document.getElementById('response').innerText = data.response;
+
+            // Display the bot's response
+            let botMessageDiv = document.createElement('div');
+            botMessageDiv.classList.add('message');
+            botMessageDiv.id = 'bot-message';
+            botMessageDiv.innerText = data.response;
+            document.getElementById('chat-box').appendChild(botMessageDiv);
+
+            // Scroll to the bottom of the chat again
+            document.getElementById('chat-box').scrollTop = document.getElementById('chat-box').scrollHeight;
         }
     </script>
 </head>
 <body>
-    <div>
-        <h1>Chatbot</h1>
+    <div id="chat-container">
         <div id="chat-box">
-            <input type="text" id="user-input" placeholder="Type your message" />
-            <button onclick="sendMessage()">Send</button>
+            <!-- Chat messages will appear here -->
         </div>
-        <div id="response"></div>
+        <div id="input-container">
+            <input type="text" id="user-input" placeholder="Type a message" />
+            <button onclick="sendMessage()">➤</button>
+        </div>
     </div>
 </body>
 </html>
