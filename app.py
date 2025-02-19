@@ -18,7 +18,7 @@ raw_doc = raw_doc.lower()
 nltk.download('punkt')
 nltk.download('wordnet')
 nltk.download('omw-1.4')
-nltk.download('punkt')
+nltk.download('punkt_tab')
 
 sentence_tokens = nltk.sent_tokenize(raw_doc)
 word_tokens = nltk.word_tokenize(raw_doc)
