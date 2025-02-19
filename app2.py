@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify, render_template
+import numpy as np
 import nltk
 import string
 import random
@@ -8,10 +9,12 @@ from sklearn.metrics.pairwise import cosine_similarity
 # Initialize Flask app
 app = Flask(__name__)
 
-
 # Load and read the data
-f = open('C:/Workspace/Portfolio/Project/Data.txt', 'r', errors='ignore')
-raw_doc = f.read()
+try:
+    with open('./Data.txt', 'r', errors='ignore') as f:
+        raw_doc = f.read()
+except FileNotFoundError:
+    raw_doc = ""
 
 # Preprocess the document
 raw_doc = raw_doc.lower()

@@ -18,6 +18,7 @@ nltk.download('omw-1.4')
 sentence_tokens = nltk.sent_tokenize(raw_doc)
 word_tokens = nltk.word_tokenize(raw_doc)
 
+print(sentence_tokens[:5])
 # Lemmatization setup
 lemmer = nltk.stem.WordNetLemmatizer()
 def LemTokens(tokens):
