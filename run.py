@@ -104,4 +104,4 @@ def chat():
     return jsonify({"response": "Please send a valid message."})
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
