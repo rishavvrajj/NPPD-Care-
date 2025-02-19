@@ -10,8 +10,11 @@ from sklearn.metrics.pairwise import cosine_similarity
 app = Flask(__name__)
 
 # Load and read the data
-f = open('./Data.txt', 'r', errors='ignore')
-raw_doc = f.read()
+try:
+    with open('./Data.txt', 'r', errors='ignore') as f:
+        raw_doc = f.read()
+except FileNotFoundError:
+    raw_doc = ""
 
 # Preprocess the document
 raw_doc = raw_doc.lower()
@@ -25,6 +28,7 @@ word_tokens = nltk.word_tokenize(raw_doc)
 
 # Lemmatization setup
 lemmer = nltk.stem.WordNetLemmatizer()
+
 def LemTokens(tokens):
     return [lemmer.lemmatize(token) for token in tokens]
 
@@ -86,23 +90,27 @@ def response(user_response):
 # Route to handle the chatbot conversation
 @app.route("/chat", methods=['POST'])
 def chat():
-    user_response = request.json.get("message")  # Get user input from the JSON request
-    
-    if user_response:
-        if greet(user_response) != None:
-            return jsonify({"response": greet(user_response)})
+    try:
+        user_response = request.json.get("message")  # Get user input from the JSON request
+        if user_response:
+            if greet(user_response) is not None:
+                return jsonify({"response": greet(user_response)})
+            else:
+                sentence_tokens.append(user_response)  # Add the user input to sentence tokens
+                word_tokens.extend(nltk.word_tokenize(user_response))  # Add the tokens of the response
+                
+                # Remove duplicates
+                final_words = list(set(word_tokens))
+                
+                bot_response = response(user_response)
+                
+                sentence_tokens.remove(user_response)  # Remove the user input after processing
+                return jsonify({"response": bot_response})
         else:
-            sentence_tokens.append(user_response)  # Add the user input to sentence tokens
-            word_tokens.extend(nltk.word_tokenize(user_response))  # Add the tokens of the response
-            
-            # Remove duplicates
-            final_words = list(set(word_tokens))
-            
-            bot_response = response(user_response)
-            
-            sentence_tokens.remove(user_response)  # Remove the user input after processing
-            return jsonify({"response": bot_response})
-    return jsonify({"response": "Please send a valid message."})
+            return jsonify({"response": "Please send a valid message."})
+    except Exception as e:
+        return jsonify({"response": f"Error: {str(e)}"})
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # Since Render will use Gunicorn, we don't need to call app.run() here
+    pass
